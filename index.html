@@ -58,7 +58,7 @@
             var result = document.getElementById('result');
             
             // Fetch CSV data and populate dropdown options
-            fetchData('Data/app_data.csv', function(response) {
+            fetchData('app_data.csv', function(response) {
                 var appData = parseCSV(response);
                 for (var appName in appData) {
                     var option = document.createElement('option');
