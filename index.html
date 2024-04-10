@@ -3,52 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Schedule</title>
+    <title>App Name to ID Lookup</title>
 </head>
 <body>
-    <h2>Application Schedule</h2>
-    
-    <label for="appName">Select Application:</label>
-    <select id="appName">
-        <option value="Application 1">Application 1</option>
-        <option value="Application 2">Application 2</option>
-        <option value="Application 3">Application 3</option>
-        <!-- Add more options as needed -->
-    </select>
-    <br><br>
-    
-    <label for="startDate">Start Date:</label>
-    <input type="date" id="startDate" name="startDate">
-    <label for="startTime">Start Time:</label>
-    <input type="time" id="startTime" name="startTime">
-    <br><br>
-    
-    <label for="endDate">End Date:</label>
-    <input type="date" id="endDate" name="endDate">
-    <label for="endTime">End Time:</label>
-    <input type="time" id="endTime" name="endTime">
-    <br><br>
-    
-    <button onclick="generateCSV()">Generate CSV</button>
-    
+    <div>
+        <h2>App Name to ID Lookup</h2>
+        <label for="app-name">Select Application Name:</label><br>
+        <select id="app-name">
+            <option value="">Select...</option>
+            <!-- Populate options dynamically with JavaScript -->
+        </select><br>
+        <p>Selected App ID: <span id="result"></span></p>
+    </div>
+
     <script>
-        function generateCSV() {
-            var appName = document.getElementById("appName").value;
-            var startDate = document.getElementById("startDate").value;
-            var startTime = document.getElementById("startTime").value;
-            var endDate = document.getElementById("endDate").value;
-            var endTime = document.getElementById("endTime").value;
-            
-            var csvContent = "Application,Start Date,Start Time,End Date,End Time\n";
-            csvContent += appName + "," + startDate + "," + startTime + "," + endDate + "," + endTime + "\n";
-            
-            var encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
-            var link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "schedule.csv");
-            document.body.appendChild(link);
-            link.click();
+        // Function to fetch data from CSV file
+        function fetchData(url, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    callback(xhr.responseText);
+                }
+            };
+            xhr.open('GET', url, true);
+            xhr.send();
         }
+
+        // Function to parse CSV data
+        function parseCSV(csv) {
+            var lines = csv.split('\n');
+            var data = {};
+            for (var i = 0; i < lines.length; i++) {
+                var parts = lines[i].split(',');
+                if (parts.length >= 2) {
+                    data[parts[0]] = parts[1];
+                }
+            }
+            return data;
+        }
+
+        // Function to update result
+        function updateResult(selectedAppName, appData) {
+            var result = document.getElementById('result');
+            if (selectedAppName in appData) {
+                result.textContent = appData[selectedAppName];
+            } else {
+                result.textContent = 'Not Found';
+            }
+        }
+
+        // Main function
+        window.onload = function() {
+            var dropdown = document.getElementById('app-name');
+            var result = document.getElementById('result');
+            
+            // Fetch CSV data and populate dropdown options
+            fetchData('Data/app_data.csv', function(response) {
+                var appData = parseCSV(response);
+                for (var appName in appData) {
+                    var option = document.createElement('option');
+                    option.text = appName;
+                    option.value = appName;
+                    dropdown.add(option);
+                }
+
+                // Event listener for dropdown change
+                dropdown.addEventListener('change', function() {
+                    var selectedAppName = dropdown.value;
+                    updateResult(selectedAppName, appData);
+                });
+            });
+        };
     </script>
 </body>
 </html>
