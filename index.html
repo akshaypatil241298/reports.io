@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Schedule</title>
+</head>
+<body>
+    <h2>Application Schedule</h2>
+    
+    <label for="appName">Select Application:</label>
+    <select id="appName">
+        <option value="Application 1">Application 1</option>
+        <option value="Application 2">Application 2</option>
+        <option value="Application 3">Application 3</option>
+        <!-- Add more options as needed -->
+    </select>
+    <br><br>
+    
+    <label for="startDate">Start Date:</label>
+    <input type="date" id="startDate" name="startDate">
+    <label for="startTime">Start Time:</label>
+    <input type="time" id="startTime" name="startTime">
+    <br><br>
+    
+    <label for="endDate">End Date:</label>
+    <input type="date" id="endDate" name="endDate">
+    <label for="endTime">End Time:</label>
+    <input type="time" id="endTime" name="endTime">
+    <br><br>
+    
+    <button onclick="generateCSV()">Generate CSV</button>
+    
+    <script>
+        function generateCSV() {
+            var appName = document.getElementById("appName").value;
+            var startDate = document.getElementById("startDate").value;
+            var startTime = document.getElementById("startTime").value;
+            var endDate = document.getElementById("endDate").value;
+            var endTime = document.getElementById("endTime").value;
+            
+            var csvContent = "Application,Start Date,Start Time,End Date,End Time\n";
+            csvContent += appName + "," + startDate + "," + startTime + "," + endDate + "," + endTime + "\n";
+            
+            var encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "schedule.csv");
+            document.body.appendChild(link);
+            link.click();
+        }
+    </script>
+</body>
+</html>
